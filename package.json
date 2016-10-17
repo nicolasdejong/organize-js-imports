@@ -1,0 +1,26 @@
+{
+  "name": "organize-js-imports",
+  "version": "1.0.2",
+  "description": "Order and group the imports",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "javascript",
+    "import",
+    "organize"
+  ],
+  "author": "Nicolas de Jong <nicolas@rutilo.nl>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolasdejong/organize-js-imports.git"
+  },
+  "devDependencies": {
+    "jasmine": "^2.5.2"
+  },
+  "dependencies": {
+    "globby": "^6.0.0"
+  }
+}

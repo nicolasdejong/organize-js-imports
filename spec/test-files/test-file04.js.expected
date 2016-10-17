@@ -1,0 +1,6 @@
+import 'someverylongname';
+import 'zoo';
+
+import a    from 'abc';
+import x, y from 'xyz';
+

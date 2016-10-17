@@ -1,0 +1,26 @@
+// Test javascript to parse imports
+
+import 'a';
+import 'b';
+import 'e';
+import 'f';
+
+import j, {k, l, m} from 'foo';
+import c            from 'libc';
+import d            from 'libd';
+
+import {o, p, q}    from '../opq';
+import r            from '../rst';
+
+function abc() {
+  let abc = 123;
+  let regex = /some|import|regex/g;
+}
+
+const def = 456;
+
+
+function ghi() {
+  let ghi = 456;
+}
+
