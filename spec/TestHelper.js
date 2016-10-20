@@ -29,9 +29,10 @@ module.exports = {
     return Object.keys(obj).sort().reduce( (a,key) => a += key + '=' + obj[key] + ',', '' );
   },
 
-  testOrganizeFile(name) {
-    let text     = fileIO.readFileSync(`spec/test-files/${name}.js`, { encoding:options.encoding });
-    let expected = fileIO.readFileSync(`spec/test-files/${name}.js.expected`, { encoding:options.encoding });
+  testOrganizeFile(name, noChange) {
+    let path     = `spec/test-files/${name}.js`;
+    let text     = fileIO.readFileSync(path, { encoding:options.encoding });
+    let expected = fileIO.readFileSync(path + (noChange?'':'.expected'), { encoding:options.encoding });
     let result   = Organizer.organizeImportsOf(text);
 
     let msg = module.exports.getMessageIfNotEqual(expected, result);

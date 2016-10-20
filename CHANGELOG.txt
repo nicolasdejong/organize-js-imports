@@ -1,0 +1,16 @@
+1.0.3 -- 20 October 2016
+- Added bin support so this app can run from the command line
+- Fixed bug in remark token
+- Fixed bug for single-line files
+- Added -validate option
+- Added -exclude option
+- Added showing processing time
+
+1.0.2 -- 19 October 2016
+- Fixed some typos in the documentation
+
+1.0.1 -- 18 october 2016
+- Added reference to github
+
+1.0.0 -- 17 october 2016
+- Initial commit

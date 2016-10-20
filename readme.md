@@ -12,7 +12,8 @@
 ## Install
 
 ```
-$ nmp install --save-dev organize-js-imports
+$ npm install -g organize-js-imports
+$ node organize-js-imports -dry-run
 ```
 
 ## Usage
@@ -22,12 +23,19 @@ organize-js-imports <options>
 Possible arguments:
 -maxNamesLength (default:30) Name padding max. Set to 0 for no padding.
 -path[s]        (default:**/*.js) One or more globs for files to process.
+-exclude        (default:**/node_modules/** **/jspm_package/**) One or more
+                globs for files to exclude.
 -encoding       (default:utf8) Encoding for reading and writing files.
 -quiet          Don't print anything except errors.
 -verbose        Print the name of each scanned file.
 -debug          Print the name and altered imports of each scanned file.  
 -dryRun         Files will not be altered.
+-validate       Exits 10 when files have imports that need organizing.
+                Files will not be altered.
+
+Instead of capitals, dashed is possible: -max-names-length, -dry-run
 ```
+
 For example
 ```
 $ organize-js-imports -paths src/foo/**/*.js src/bar/bar.js -maxNamesLength 40 -verbose
@@ -69,4 +77,4 @@ import {x, y}       from './xy';
 
 ## License
 
-MIT (c) Nicolas de Jong
+MIT (C) Nicolas de Jong

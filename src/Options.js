@@ -1,22 +1,24 @@
 'use strict'
-const version = '1.0';
-const name = 'organize-js-imports';
-const author = 'Nicolas de Jong <nicolas@rutilo.nl>';
+let pak = require('../package.json');
 
 module.exports = {
-  version: version,
-  name: name,
-  author: author,
+  version: pak.version,
+  name: pak.name,
+  author: pak.author,
   options: {}, // set by processArgs
+  lineCount: 0,
   defaults : {
     maxNamesLength: 30,
     path: '**/*.js',
+    exclude: ['**/node_modules/**', '**/jspm_packages/**'],
     quiet: false,
     debug: false,
     dryRun: false,
+    validate: false,
     pathQuote: "'",
     namesJoin: ', ',
-    encoding: 'utf8'
+    encoding: 'utf8',
+    h:'', help:'', '?':''
   },
   alias : {
     maxnameslength:     'maxNamesLength',
@@ -24,19 +26,23 @@ module.exports = {
     maxNameLength:      'maxNamesLength',
     'max-names-length': 'maxNamesLength',
     paths: 'path',
+    excludes: 'exclude',
     dryrun:    'dryRun',
     'dry-run': 'dryRun',
   },
   help: `
-    ${name} V${version} by ${author}
+    ${pak.name} V${pak.version} by ${pak.author}
     Possible arguments:
     -maxNamesLength (default:30) Name padding max. Set to 0 for no padding.
     -path[s]        (default:**/*.js) One or more globs for files to process.
+    -exclude[s]     (default:**/node_modules/** **/jspm_package/**)
+    >               One or more globs for files to exclude.
     -encoding       (default:utf8) Encoding for reading and writing files.
     -quiet          Don't print anything except errors.
     -verbose        Print the name of each scanned file.
     -debug          Print the name and altered imports of each scanned file.  
     -dryRun         Files will not be altered.
+    -validate       Exits 10 when files need organizing. Files will not be altered.
   `,
   processArgs : args => {
     if (!args) args = process.argv.slice(2);
@@ -55,9 +61,9 @@ module.exports = {
       options[key] = val.length == 0 ? true : val.length == 1 ? val[0] : val;
     }
     options.path = Array.isArray(options.path) ? options.path : [options.path];
-    if (options.h || options.help || options['?']) module.exports.printHelpAndExit();
+    if (options.h || options.help || options['?']) printHelpAndExit();
     if (options.debug) {
-      console.log(`${name} V${version}`);
+      console.log(`${pak.name} V${pak.version}`);
 
       console.log('Provided options:');
       console.log('{');
@@ -69,7 +75,7 @@ module.exports = {
 
 function printHelpAndExit(error) {
   if (error) console.error(error);
-  console.log(module.exports.help.trim().replace( /\n\s+/g, '\n' ));
+  console.log(module.exports.help.trim().replace( /\n\s+/g, '\n' ).replace( /^>/m, ' ' ));
   process.exit(0);
 }
 

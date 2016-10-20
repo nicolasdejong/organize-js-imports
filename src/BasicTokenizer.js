@@ -29,6 +29,7 @@ module.exports = function BasicTokenizer(script) {
     this.noContent    = () => self.isSpacing() || self.isRemark();
   }
 
+  self.lineCount = 0;
   self.tokenize = () => {
     let tokens = [];
     while(parsing()) tokens.push( nextToken() );
@@ -55,19 +56,23 @@ module.exports = function BasicTokenizer(script) {
          : 0;
   }
 
-  function isSpacing()  { return ' \t\n\r'.indexOf(get()) >= 0; }
+  function isSpacing()  {
+    let c = get();
+    if(c === '\n') self.lineCount++;
+    return c === ' ' || c === '\t' || c === '\n' || c === '\r';
+  }
   function getSpacing() {
     let text = '';
     while(isSpacing()) text += getAndNext();
     return text;
   }
 
-  function isRemark() { return get() == '/' && (get(1) == '/' || get(1) == '*'); }
+  function isRemark() { return get() === '/' && (get(1) === '/' || get(1) === '*'); }
   function getRemark() {
     let text = '' + getAndNext() + getAndNext();
     if( get(-1) == '/' ) {
       while(!(get() == '\n') && parsing()) text += getAndNext();
-    }
+    } else
     if( get(-1) == '*' ) {
       while(!(get() == '*' && get(1) == '/') && parsing()) {
         text += getAndNext();
@@ -77,7 +82,7 @@ module.exports = function BasicTokenizer(script) {
     return text.toString();
   }
 
-  function isQuote() { return "'`\"".indexOf(get()) >= 0; }
+  function isQuote()  { let c=get(); return c === "'" || c === '`' || c === '"'; }
   function getQuote() {
     let text = '';
     let quoteChar = get();

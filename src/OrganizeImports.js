@@ -2,7 +2,8 @@
 let fileIO         = require('fs');
 let stream         = require('stream');
 
-let options        = require('./Options').options;
+let Options        = require('./Options');
+let options        = Options.options;
 let Import         = require('./Import');
 let BasicTokenizer = require('./BasicTokenizer');
 
@@ -15,13 +16,13 @@ module.exports.organizeImportsOf = function(input, whenChanged, whenFinished) {
   if (!input) return;
   let stringHandler = (string) => {
     let result;
-    if (string.indexOf('\n') < 0 && string.indexOf('/') < 0) {
+    if (/^[^\s;'"]+$/.test(string)) {
       let filename = string;
       result = organizeImportsOfFile(filename, whenChanged, whenFinished);
     } else {
       let fileContents = string;
       result = organizeImportsOfText(fileContents);
-      if (whenChanged && result !== fileContents) whenChanged(result, fileContents);
+      if (whenChanged && result && result !== fileContents) whenChanged(result, fileContents);
       if (whenFinished) whenFinished();
     }
     return result;
@@ -45,13 +46,19 @@ module.exports.organizeImportsOf = function(input, whenChanged, whenFinished) {
 };
 
 function organizeImportsOfFile(path, whenChanged, whenFinished) {
+  if (!fileIO.lstatSync(path).isFile()) {
+    if (!options.quiet) console.log('Not a file:', path);
+    if (whenFinished) whenFinished();
+    return null;
+  }
+
   let fileContents = fileIO.readFileSync(path, {encoding:options.encoding});
   let organized    = organizeImportsOfText(fileContents);
   let normalize    = s => (s||'').replace( /\r\n|\r/g, '\n' );
 
   if (normalize(organized) !== normalize(fileContents)) {
     if (whenChanged) whenChanged(organized, fileContents);
-    if (!options.dryRun) {
+    if (!options.dryRun && !options.validate) {
       fileIO.writeFile(path, organized, {encoding:options.encoding}, error => {
         if (error) console.error('ERROR writing to: ' + path + '\n ==> ' + error);
       });
@@ -64,12 +71,15 @@ function organizeImportsOfFile(path, whenChanged, whenFinished) {
 }
 
 function organizeImportsOfText(fileContents) {
-  let tokens = new BasicTokenizer(fileContents).tokenize();
+  let tokenizer = new BasicTokenizer(fileContents);
+  let tokens = tokenizer.tokenize();
   let iStart = -1;
   let expectLib = false;
   let imports = [];
   let beforeText = '';
   let restText = '';
+
+  Options.lineCount += tokenizer.lineCount;
 
   for(let i=0; i<tokens.length; i++) {
     let token = tokens[i];
@@ -105,7 +115,7 @@ function organizeImportsOfText(fileContents) {
   }
   let importsText = Import.importsToString(imports).trim();
 
-  let eol = /^.*(\r\n|\r|\n)/.exec(fileContents)[1] || '\n';
+  let eol = (/^.*(\r\n|\r|\n)/.exec(fileContents)||[])[1] || '\n';
   let result = beforeText + importsText + (importsText ? '\n\n' : '') + restText.replace( /^\n*/, '' );
   if (eol != '\n') result = result.replace( /\r\n|\n/g, eol );
   return result;
