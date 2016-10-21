@@ -57,7 +57,7 @@ function Import(s0) {
            (self.path === ''
              ? joinedNames
              : (joinedNames.length > options.maxNamesLength
-                 ? joinedNames + '\n' + leftPad("", namesLen + "import ".length)
+                 ? joinedNames + (options.maxNamesLength > 0 ? '\n' + leftPad("", namesLen + "import ".length) : '')
                  : rightPad(joinedNames, namesLen)
                ) +
                " from " + options.pathQuote + self.path + options.pathQuote
@@ -92,6 +92,7 @@ Import.importsToString = function importsToString(imports) {
   function sort() {
     let isQuote = c => c == '"' || c == "'" || c == '`';
     let skipQuote = s => isQuote(s.charAt(0)) ? s.substring(1) : s;
+    let normalize = s => s.replace( /\//g, ' ');
     imports.forEach( imp => imp.names.sort( (a,b) => {
       a = skipQuote(a);
       b = skipQuote(b);
@@ -102,7 +103,7 @@ Import.importsToString = function importsToString(imports) {
       if (a.distance() === b.distance()) {
         return a.path === b.path
                  ? (a.names[0] < b.names[0] ? -1 : 1)
-                 : (a.path < b.path ? -1 : 1);
+                 : (normalize(a.path) < normalize(b.path) ? -1 : 1);
       }
       return b.distance() - a.distance();
     });

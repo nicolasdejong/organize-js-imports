@@ -12,8 +12,8 @@
 ## Install
 
 ```
-$ npm install -g organize-js-imports
-$ node organize-js-imports -dry-run
+$ npm install organize-js-imports
+$ node ./node_modules/organize-js-imports -dry-run
 ```
 
 ## Usage

@@ -59,9 +59,11 @@ function organizeImportsOfFile(path, whenChanged, whenFinished) {
   if (normalize(organized) !== normalize(fileContents)) {
     if (whenChanged) whenChanged(organized, fileContents);
     if (!options.dryRun && !options.validate) {
-      fileIO.writeFile(path, organized, {encoding:options.encoding}, error => {
-        if (error) console.error('ERROR writing to: ' + path + '\n ==> ' + error);
-      });
+      try {
+        fileIO.writeFileSync(path, organized, {encoding:options.encoding});
+      } catch(error) {
+        console.error('ERROR writing to: ' + path + '\n ==> ' + error);
+      }
     }
     if (whenFinished) whenFinished();
     return organized;

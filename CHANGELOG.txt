@@ -1,4 +1,11 @@
-1.0.3 -- 20 October 2016
+1.1.2 -- 21 October 2016
+- Shorter names in paths are now sorted first (e.g. 'abc/def' vs 'abc-more/def')
+- Fixed disabling padding (max-names-length 0) which still added a newline
+
+1.1.1 -- 20 October 2016
+- Writing files asynchronously sometimes resulted in a blank file.
+
+1.1.0 -- 20 October 2016
 - Added bin support so this app can run from the command line
 - Fixed bug in remark token
 - Fixed bug for single-line files

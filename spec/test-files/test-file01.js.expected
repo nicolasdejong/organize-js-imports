@@ -12,11 +12,11 @@ import *, {z as Z}    from 'starz';
 import v, {w, x as X} from 'vwx';
 import *              from 'y';
 
-import *              from '../../../libm';
-import *              from '../../../libn';
+import {s, t}         from '..//../libst';
 import k as K         from '../..//libk';
 import l as L         from '../..//libl';
-import {s, t}         from '..//../libst';
+import *              from '../../../libm';
+import *              from '../../../libn';
 import {aaaa, bbbb, cccc, dddd, eeee, ffff, gggg, hhhh}
                       from '../libo';
 

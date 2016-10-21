@@ -1,5 +1,6 @@
 'use strict'
 let Import = require('../src/Import');
+let options = require('../src/Options').options;
 
 describe('Import', () => {
   let test = (toTest, expected, toStringArg) => {
@@ -44,7 +45,7 @@ describe('Imports', () => {
       new Import("import {z,x,y} from './bar'"),
       new Import("import q from '../other/qrs'")
     ]);
-    let result = Import.importsToString(imports);
+    let result = Import.importsToString(imports.slice());
     expect( '\n' + result.trim() + '\n' ).toEqual(`
 import a;
 import b;
@@ -56,6 +57,23 @@ import q                  from '../other/qrs';
 
 import {a, b, c, x, y, z} from './bar';
 import {a, b, c, m, z}    from './foo';
+`
+    );
+    let mnl = options.maxNamesLength;
+    options.maxNamesLength = 0;
+    let resultNoPadding = Import.importsToString(imports.slice());
+    options.maxNamesLength = mnl;
+    expect( '\n' + resultNoPadding.trim() + '\n' ).toEqual(`
+import a;
+import b;
+
+import {c} from 'abc';
+
+import 'abc' from '../other/abcdef';
+import q from '../other/qrs';
+
+import {a, b, c, x, y, z} from './bar';
+import {a, b, c, m, z} from './foo';
 `
     );
   });
