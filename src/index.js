@@ -1,11 +1,25 @@
 'use strict'
-let globby    = require('globby');
-let minimatch = require('minimatch');
-let Options   = require('./Options');
-let Organizer = require('./OrganizeImports');
-let tokenizer = require('./BasicTokenizer');
+let globby     = require('globby');
+let minimatch  = require('minimatch');
+let moment     = require('moment');
+let Options    = require('./Options');
+let Organizer  = require('./OrganizeImports');
+let tokenizer  = require('./BasicTokenizer');
+let filesystem = require('fs');
+let exec       = require('child_process').exec;
 
-processPaths(Options.options);
+if (Options.options.gitModified) {
+  exec('git status', (err, data, stderr) => {
+    if (err && stderr) {
+      console.error('Unable to run git:', stderr);
+      return;
+    }
+    Options.options.path = String(data).match( /:\s+(.+\.js)\s/g ).map( m => m.substring(1).trim() );
+    processPaths(Options.options);
+  });
+} else {
+  processPaths(Options.options);
+}
 
 function processPaths(options) {
   let fileCount = 0;
@@ -18,11 +32,10 @@ function processPaths(options) {
   if (options.dryRun && !options.quiet && !options.validate) console.log('Dry run: no files will be altered.');
   if (options.validate && !options.quiet) console.log('Validate: searching for files that need organizing.');
 
-  globby(options.path).then(paths => {
+  globby(options.path, { ignore: options.exclude || false }).then(paths => {
     t2 = new Date().getTime();
     if (options.debug) console.log('Filesystem scan resulted in ' + paths.length + ' files, took ' + msToTimeText(t2-t1));
-
-    paths = excludePaths(paths, options.exclude);
+    paths = excludePaths(paths, options);
     if (options.debug) console.log('Scanning ' + paths.length + ' files.');
 
     let n = 0;
@@ -72,10 +85,19 @@ function processPath(path, options, n, pathCount) {
   return altered;
 }
 
-function excludePaths(paths, excludes) {
-  if (!excludes ) return;
-  if (!Array.isArray(excludes)) excludes = [excludes];
-  return paths.filter( path => !excludes.find( exclude => minimatch(path, exclude) ) );
+function excludePaths(paths, options) {
+  let recent = optionToMoment(options.recent);
+  let older  = optionToMoment(options.older);
+  return paths
+           .filter( path => {
+             if (recent || older) {
+               let stat = filesystem.statSync(path);
+               let time = moment((stat || {}).mtime || 0);
+               if (recent && !time.isAfter(recent)) return false;
+               if (older  && !time.isBefore(older)) return false;
+             }
+             return true;
+           } );
 }
 
 function normalize(s) {
@@ -96,4 +118,15 @@ function linesToText(count) {
   if (count > 10 * 1000 * 1000) return Math.round(count / (1000 * 100)) / 10 + 'M';
   if (count > 10 * 1000) return Math.floor(count / 1000) + 'K';
   return '' + count;
+}
+function optionToMoment(setting) { // return null when no setting
+  if (!setting) return null;
+  if (!Array.isArray(setting)) setting = [setting];
+  if (setting.length === 0 ) return moment(0);
+  if (setting.length === 1 ) setting.push('days');
+  if (setting[1].length > 2) { // DAY -> day, day -> days
+    setting[1] = setting[1].toLowerCase();
+    if (!/^.*s$/.test(setting[1])) setting[1] += 's';
+  }
+  return moment().subtract( moment.duration(parseInt(setting[0]), setting[1]) );
 }

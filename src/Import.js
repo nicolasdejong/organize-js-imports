@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 let options = require('./Options').options;
 
 module.exports = Import;
@@ -63,7 +63,7 @@ function Import(s0) {
                " from " + options.pathQuote + self.path + options.pathQuote
            ) +
            ';';
-  }
+  };
 
   // Imports will be sorted furthest to closest distance.
   self.distance = () => {
@@ -72,7 +72,11 @@ function Import(s0) {
     if (this.path.substring(0, 3) === '../') return 1;   // 1: import a from '../amodule';
     return 2;                                            // 2: import a from 'amodule';
   };
-};
+  self.depth = () => {
+    if (!options.depthSort) return 0;
+    return this.path.split( /\/+/ ).length;
+  };
+}
 
 Import.importsToString = function importsToString(imports) {
   function combinePaths() {
@@ -96,14 +100,15 @@ Import.importsToString = function importsToString(imports) {
     imports.forEach( imp => imp.names.sort( (a,b) => {
       a = skipQuote(a);
       b = skipQuote(b);
-      if ( '\'"`'.indexOf(b.charAt(0)) >= 0 ) b = b.substring(1);
       return a === b ? 0 : a < b ? -1 : 1;
     }) );
     imports.sort( (a, b) => {
       if (a.distance() === b.distance()) {
-        return a.path === b.path
-                 ? (a.names[0] < b.names[0] ? -1 : 1)
-                 : (normalize(a.path) < normalize(b.path) ? -1 : 1);
+        return a.depth() === b.depth()
+                 ? a.path === b.path
+                   ? (a.names[0] < b.names[0] ? -1 : 1)
+                   : (normalize(a.path) < normalize(b.path) ? -1 : 1)
+                 : b.depth() - a.depth();
       }
       return b.distance() - a.distance();
     });

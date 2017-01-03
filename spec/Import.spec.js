@@ -43,7 +43,10 @@ describe('Imports', () => {
       new Import("import 'abc' from '../other/abcdef'"),
       new Import("import {c,b} from './foo'"),
       new Import("import {z,x,y} from './bar'"),
-      new Import("import q from '../other/qrs'")
+      new Import("import q from '../other/qrs'"),
+      new Import("import 'd' from '../../src/config'"),
+      new Import("import 'e' from '../../src/decorator/entity'"),
+      new Import("import 'f' from '../../src/decorator/id'"),
     ]);
     let result = Import.importsToString(imports.slice());
     expect( '\n' + result.trim() + '\n' ).toEqual(`
@@ -52,6 +55,9 @@ import b;
 
 import {c}                from 'abc';
 
+import 'd'                from '../../src/config';
+import 'e'                from '../../src/decorator/entity';
+import 'f'                from '../../src/decorator/id';
 import 'abc'              from '../other/abcdef';
 import q                  from '../other/qrs';
 
@@ -69,11 +75,49 @@ import b;
 
 import {c} from 'abc';
 
+import 'd' from '../../src/config';
+import 'e' from '../../src/decorator/entity';
+import 'f' from '../../src/decorator/id';
 import 'abc' from '../other/abcdef';
 import q from '../other/qrs';
 
 import {a, b, c, x, y, z} from './bar';
 import {a, b, c, m, z} from './foo';
+`
+    );
+  });
+  it('depthSort order', () => {
+    let imports = shuffle([
+      new Import("import a"),
+      new Import("import b"),
+      new Import("import {c} from 'abc';"),
+      new Import("import {z,a, m} from './foo'"),
+      new Import("import {a,b,c} from './bar'"),
+      new Import("import 'abc' from '../other/abcdef'"),
+      new Import("import {c,b} from './foo'"),
+      new Import("import {z,x,y} from './bar'"),
+      new Import("import q from '../other/qrs'"),
+      new Import("import 'd' from '../../src/config'"),
+      new Import("import 'e' from '../../src/decorator/entity'"),
+      new Import("import 'f' from '../../src/decorator/id'"),
+    ]);
+    options.depthSort = true;
+    let result = Import.importsToString(imports.slice());
+    options.depthSort = false;
+    expect( '\n' + result.trim() + '\n' ).toEqual(`
+import a;
+import b;
+
+import {c}                from 'abc';
+
+import 'e'                from '../../src/decorator/entity';
+import 'f'                from '../../src/decorator/id';
+import 'd'                from '../../src/config';
+import 'abc'              from '../other/abcdef';
+import q                  from '../other/qrs';
+
+import {a, b, c, x, y, z} from './bar';
+import {a, b, c, m, z}    from './foo';
 `
     );
   });

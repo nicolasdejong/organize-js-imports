@@ -1,20 +1,27 @@
+1.2.0 -- 3 January 2017
+- Improved exclude performance
+- Added -recent option to process only recently altered files
+- Added -older option to process only not recently altered files
+- Added -gitModified option to process the modified files according to git
+- Added -depthSort option to sort import paths on '../' count
+
 1.1.2 -- 21 October 2016
 - Shorter names in paths are now sorted first (e.g. 'abc/def' vs 'abc-more/def')
-- Fixed disabling padding (max-names-length 0) which still added a newline
+* Fixed disabling padding (max-names-length 0) which still added a newline
 
 1.1.1 -- 20 October 2016
-- Writing files asynchronously sometimes resulted in a blank file.
+* Writing files asynchronously sometimes resulted in a blank file.
 
 1.1.0 -- 20 October 2016
 - Added bin support so this app can run from the command line
-- Fixed bug in remark token
-- Fixed bug for single-line files
+* Fixed bug in remark token
+* Fixed bug for single-line files
 - Added -validate option
 - Added -exclude option
 - Added showing processing time
 
 1.0.2 -- 19 October 2016
-- Fixed some typos in the documentation
+* Fixed some typos in the documentation
 
 1.0.1 -- 18 october 2016
 - Added reference to github
