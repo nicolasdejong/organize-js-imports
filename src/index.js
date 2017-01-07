@@ -1,10 +1,9 @@
-'use strict'
+'use strict';
 let globby     = require('globby');
 let minimatch  = require('minimatch');
 let moment     = require('moment');
 let Options    = require('./Options');
 let Organizer  = require('./OrganizeImports');
-let tokenizer  = require('./BasicTokenizer');
 let filesystem = require('fs');
 let exec       = require('child_process').exec;
 
@@ -69,7 +68,7 @@ function processPaths(options) {
     console.error('FAILED WITH ERROR:', error);
     process.exit(-1);
   });
-};
+}
 
 function processPath(path, options, n, pathCount) {
   let altered = false;

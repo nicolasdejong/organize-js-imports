@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 let pak = require('../package.json');
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
     Possible arguments (dashed possible: -max-names-length, -dry-run):
     -maxNamesLength (default:30) Name padding max. Set to 0 for no padding.
     -path[s]        (default:**/*.js) One or more globs for files to process.
-    -gitModified    Overrides -path to process the modified files according to git.
+    -git[Modified]  Overrides -path to process the modified files according to git.
     -exclude[s]     (default:**/node_modules/** **/jspm_package/**)
     >               One or more globs for files to exclude.
     -encoding       (default:utf8) Encoding for reading and writing files.

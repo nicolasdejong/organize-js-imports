@@ -14,26 +14,31 @@ module.exports = Import;
   import defaultMember, * as name from "module-name";
   import "module-name";
 */
-function Import(s0) {
+function Import(beforeFrom, afterFrom) {
   let self = this;
-  let s = (s0||'').replace( /\s+/g, ' ' ).replace( /;+$/, '' );
-  let parts = s.split( /\s*(?:import|from|;)\s*/ );
+  let cleanup = s => (s||'').replace( /[\s\r\n]+/g, ' ' )
+                            .replace( / +/, ' ' )
+                            .replace( /;+$/, '' ).trim();
 
-  let nameParts = /^\s*(.*?)(?:,\s*(\{[^}]+\}))?\s*$/.exec( parts[1] );
+  // Some tests call Import for a full import line. Here split on ' from '.
+  if ( (beforeFrom||'').indexOf('import ') === 0 ) {
+    let parts = cleanup(beforeFrom).replace( /^import\s+/, '' ).split( /\s+(?:from)\s+/ );
+    beforeFrom = parts[0];
+    afterFrom = parts[1];
+  }
+  beforeFrom = cleanup(beforeFrom);
+  afterFrom  = cleanup(afterFrom);
+
+  let nameParts = /^\s*(.*?)(?:,\s*(\{[^}]+}))?\s*$/.exec( beforeFrom ) || [ '', beforeFrom ];
   this.nameDefault = nameParts[2] ? nameParts[1] : null;
   this.names = nameParts[ nameParts[2] ? 2 : 1];
   this.isBraced = this.names.substring(0,1) === '{';
-  this.names = this.names.trim().replace( /^\{|\}$/g, '').split( /,/ ).map( n => n.trim() ).sort();
-  this.path = parts.length > 2 ? cleanPath(parts[2]) : '';
-
-
-  function cleanPath(p) {
-    return p.trim()
-            .replace( /^\s*['"`]/, '')
-            .replace( /['"`]\s*$/, '')
-            .replace( /^\.\/\.\.\//, '../') // "./../" -> "../"
-            ;
-  }
+  this.names = this.names.trim().replace( /^\{|}$/g, '').split( /,/ ).map( n => n.trim() ).sort();
+  this.path = afterFrom ? afterFrom.trim()
+                            .replace( /^\s*['"`]/, '')
+                            .replace( /['"`]\s*$/, '')
+                            .replace( /^\.\/\.\.\//, '../') // "./../" -> "../"
+                        : '';
 
   this.add = function(otherImport) {
     if (self.path != otherImport.path) return; // only names of equal paths should be combined
@@ -66,13 +71,13 @@ function Import(s0) {
   };
 
   // Imports will be sorted furthest to closest distance.
-  self.distance = () => {
+  this.distance = () => {
     if (!this.path) return 3;                            // 3: import 'a';
     if (this.path.substring(0, 2) === './') return 0;    // 0: import a from './amodule';
     if (this.path.substring(0, 3) === '../') return 1;   // 1: import a from '../amodule';
     return 2;                                            // 2: import a from 'amodule';
   };
-  self.depth = () => {
+  this.depth = () => {
     if (!options.depthSort) return 0;
     return this.path.split( /\/+/ ).length;
   };

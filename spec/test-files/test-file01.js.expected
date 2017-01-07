@@ -20,6 +20,7 @@ import *              from '../../../libn';
 import {aaaa, bbbb, cccc, dddd, eeee, ffff, gggg, hhhh}
                       from '../libo';
 
+import {importfrom}   from './import-from-test';
 import {g, h, i as I} from './libg';
 import {h}            from './libh';
 import {i, i2}        from './libi';

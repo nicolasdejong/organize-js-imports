@@ -1,9 +1,13 @@
+1.2.1 -- 7 January 2017
+* Fixed bug when 'import' or 'from' occurred multiple times in an import line
+* Fixed typos in documentation
+
 1.2.0 -- 3 January 2017
 - Improved exclude performance
 - Added -recent option to process only recently altered files
 - Added -older option to process only not recently altered files
-- Added -gitModified option to process the modified files according to git
-- Added -depthSort option to sort import paths on '../' count
+- Added -git[Modified] option to only process the modified files according to git
+- Added -depthSort option to sort import paths on depth (deepest first)
 
 1.1.2 -- 21 October 2016
 - Shorter names in paths are now sorted first (e.g. 'abc/def' vs 'abc-more/def')

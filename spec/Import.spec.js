@@ -20,6 +20,7 @@ describe('Import', () => {
     });
   };
 
+  test('import {importfrom} from "./import-from-test"', "import {importfrom} from './import-from-test';");
   test('import a', 'import a;');
   test('import a', 'import a;', 5);
   test('import a from b', "import a from 'b';");

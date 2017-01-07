@@ -17,8 +17,7 @@ module.exports.organizeImportsOf = function(input, whenChanged, whenFinished) {
   let stringHandler = (string) => {
     let result;
     if (/^[^\s;'"]+$/.test(string)) {
-      let filename = string;
-      result = organizeImportsOfFile(filename, whenChanged, whenFinished);
+      result = organizeImportsOfFile(/*filename=*/string, whenChanged, whenFinished);
     } else {
       let fileContents = string;
       result = organizeImportsOfText(fileContents);
@@ -85,9 +84,10 @@ function organizeImportsOfText(fileContents) {
 
   for(let i=0; i<tokens.length; i++) {
     let token = tokens[i];
+
     if(iStart<0 || token.isRemark()) {
       if( "import" === token.text ) {
-        iStart = i;
+        iStart = i + 1; // skip import
         if (!imports.length) { beforeText = restText; restText = ''; }
       } else {
         restText += token.text;
@@ -98,16 +98,19 @@ function organizeImportsOfText(fileContents) {
 
       if( isSemicolon || (expectLib && !token.noContent()) ) {
         if(token.isQuoted()) i++;
-        let importText = '';
+        let importText = [''];
         for(let ri=iStart; ri<i; ri++) {
             let rtoken = tokens[ri];
-            if(!rtoken.isRemark()) importText += rtoken.text;
+            if(!rtoken.isRemark()) {
+              if (rtoken.text === 'from') importText.push('');
+              else importText[importText.length-1] += rtoken.text;
+            }
         }
         tokens.splice(iStart, i - iStart); // remove [iStart...i] from array
         i = iStart;
         iStart = -1;
         expectLib = false;
-        imports.push( new Import(importText) );
+        imports.push( new Import(/*beforeFrom*/importText[0], /*afterFrom*/importText[1]) );
         if(token.isSpacing()) restText += '\n';
         while(i<tokens.length && (tokens[i].isSpacing() || tokens[i].text === ';')) i++; i--;
       } else {

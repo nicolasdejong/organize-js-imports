@@ -9,6 +9,12 @@ describe('organize-js-imports', () => {
     TestHelper.testOrganizeFile('test-file01');
   });
 
+  it('should not be affected by names', () => {
+    let textIn = "import {b, importfromtest} from './imports-from-test';";
+    let result = Organizer.organizeImportsOfText(textIn);
+    expect(result.trim()).toBe(textIn.trim());
+  });
+
   it('imports without path should not affect justification', () => {
     TestHelper.testOrganizeFile('test-file04');
   });

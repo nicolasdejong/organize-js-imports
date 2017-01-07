@@ -1,6 +1,6 @@
 {
   "name": "organize-js-imports",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Order and group the imports",
   "main": "src/index.js",
   "bin": {

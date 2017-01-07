@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const SPACING    = 'SPACING';
 const REMARK     = 'REMARK';
 const QUOTED     = 'QUOTED';
@@ -29,8 +29,8 @@ module.exports = function BasicTokenizer(script) {
     this.noContent    = () => self.isSpacing() || self.isRemark();
   }
 
-  self.lineCount = 0;
-  self.tokenize = () => {
+  this.lineCount = 0;
+  this.tokenize = () => {
     let tokens = [];
     while(parsing()) tokens.push( nextToken() );
     return tokens;

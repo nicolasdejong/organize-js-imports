@@ -38,5 +38,6 @@ import 'u'
 import v, {w, x as X} from 'vwx';
 import * from 'y';
 import *, {z as Z} from 'starz';
+import {importfrom} from './import-from-test';
 
 // end
